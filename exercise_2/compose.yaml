@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+    image:
+    ports:
+    environment:
+    secrets:
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image:
+    environment:
+    secrets:
+    volumes:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d demo"]
+      interval: 2s
+      retries: 10
+
+secrets:
+volumes:
