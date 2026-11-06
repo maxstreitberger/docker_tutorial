@@ -1,23 +1,39 @@
 services:
   web:
-    build:
-    image:
+    build: .
+    image: compose_demo
     ports:
+      - "8000:5000"
     environment:
+      APP_NAME: ${APP_NAME}
+      DB_HOST: db
+      DB_NAME: demo
+      DB_USER: demo
+      DB_PASSWORD_FILE: /run/secrets/db_password
     secrets:
+      - db_password
     depends_on:
       db:
         condition: service_healthy
 
   db:
-    image:
+    image: postgres:16
     environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     secrets:
+      - db_password
     volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U demo -d demo"]
       interval: 2s
       retries: 10
 
 secrets:
+  db_password:
+    file: ./db_password.txt
+
 volumes:
+  pgdata:
